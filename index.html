@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SSC CGL 2026 Tracker PRO</title>
+
+<style>
+body { font-family: Arial; background:#0f172a; color:white; padding:20px; }
+h1 { text-align:center; }
+.section { background:#1e293b; margin:20px 0; padding:15px; border-radius:10px; }
+h2 { color:#38bdf8; }
+label { display:block; margin:4px 0; cursor:pointer; }
+.progress { margin-top:10px; color:#94a3b8; }
+
+.topbar {
+  text-align:center;
+  margin-bottom:20px;
+}
+button {
+  padding:8px 12px;
+  margin:5px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h1>SSC CGL 2026 Tracker</h1>
+
+<div class="topbar">
+  <button onclick="exportData()">⬇ Download Backup</button>
+  <input type="file" onchange="importData(event)">
+</div>
+
+<div id="app"></div>
+
+<script>
+const syllabus = {
+"Maths": ["Number System","Percentage","Profit Loss","Ratio","Time Work","Time Speed Distance","Algebra","Geometry","Mensuration","Trigonometry","DI","Statistics"],
+"English": ["Reading","Cloze","Error","Sentence Improvement","Vocab","Idioms","Voice","Speech"],
+"Reasoning": ["Analogy","Series","Coding","Blood Relation","Puzzle","Seating","Syllogism","Venn"],
+"GK": ["History","Geography","Polity","Economics","Science","Computer","Current Affairs"]
+};
+
+const app = document.getElementById("app");
+
+function save() {
+  let data = {};
+  document.querySelectorAll("input").forEach(cb => data[cb.id] = cb.checked);
+  localStorage.setItem("ssc_tracker", JSON.stringify(data));
+}
+
+function load() {
+  let data = JSON.parse(localStorage.getItem("ssc_tracker")) || {};
+  document.querySelectorAll("input").forEach(cb => cb.checked = data[cb.id] || false);
+}
+
+function exportData() {
+  const data = localStorage.getItem("ssc_tracker");
+  const blob = new Blob([data], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ssc-backup.json";
+  a.click();
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function() {
+    localStorage.setItem("ssc_tracker", reader.result);
+    location.reload();
+  };
+  reader.readAsText(file);
+}
+
+function update(div) {
+  let boxes = div.querySelectorAll("input");
+  let done = [...boxes].filter(x=>x.checked).length;
+  div.querySelector(".progress").innerText = `Progress: ${done}/${boxes.length}`;
+}
+
+Object.keys(syllabus).forEach(sec=>{
+  let div=document.createElement("div");
+  div.className="section";
+
+  let h=document.createElement("h2");
+  h.innerText=sec;
+  div.appendChild(h);
+
+  syllabus[sec].forEach(topic=>{
+    let id=sec+"-"+topic;
+
+    let label=document.createElement("label");
+    let cb=document.createElement("input");
+
+    cb.type="checkbox";
+    cb.id=id;
+
+    cb.onchange=()=>{save(); update(div);};
+
+    label.appendChild(cb);
+    label.append(topic);
+
+    div.appendChild(label);
+  });
+
+  let prog=document.createElement("div");
+  prog.className="progress";
+  div.appendChild(prog);
+
+  app.appendChild(div);
+});
+
+load();
+document.querySelectorAll(".section").forEach(update);
+</script>
+
+</body>
+</html>
