@@ -2,122 +2,997 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SSC CGL 2026 Tracker PRO</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSC CGL 2026 — Study Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-body { font-family: Arial; background:#0f172a; color:white; padding:20px; }
-h1 { text-align:center; }
-.section { background:#1e293b; margin:20px 0; padding:15px; border-radius:10px; }
-h2 { color:#38bdf8; }
-label { display:block; margin:4px 0; cursor:pointer; }
-.progress { margin-top:10px; color:#94a3b8; }
+  :root {
+    --bg: #0b0f1a;
+    --surface: #111827;
+    --surface2: #1a2234;
+    --border: #1f2d42;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --accent-math: #f59e0b;
+    --accent-eng: #34d399;
+    --accent-rea: #818cf8;
+    --accent-gk: #f472b6;
+    --done: #10b981;
+  }
 
-.topbar {
-  text-align:center;
-  margin-bottom:20px;
-}
-button {
-  padding:8px 12px;
-  margin:5px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: linear-gradient(135deg, #0f1a2e 0%, #0b1220 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 24px 28px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+  header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #f59e0b, #f472b6, #818cf8, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ─── OVERALL PROGRESS BAR ─── */
+  .overall-bar-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 18px 24px 0;
+  }
+  .overall-bar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .overall-bar-top span:first-child {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .overall-bar-top span:last-child {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .bar-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #f59e0b, #f472b6, #818cf8, #34d399);
+    transition: width 0.4s ease;
+  }
+
+  /* ─── SUBJECT TABS ─── */
+  .tabs {
+    max-width: 900px;
+    margin: 24px auto 0;
+    padding: 0 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 7px 18px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { border-color: #3b4d6a; color: var(--text); }
+  .tab-btn.active { color: #000; font-weight: 600; border-color: transparent; }
+  .tab-btn[data-subject="Mathematics"].active { background: var(--accent-math); }
+  .tab-btn[data-subject="English"].active { background: var(--accent-eng); }
+  .tab-btn[data-subject="Reasoning"].active { background: var(--accent-rea); }
+  .tab-btn[data-subject="General Awareness"].active { background: var(--accent-gk); }
+  .tab-btn[data-subject="all"].active { background: #e2e8f0; }
+
+  /* ─── MAIN CONTENT ─── */
+  .main {
+    max-width: 900px;
+    margin: 24px auto 0;
+    padding: 0 24px;
+  }
+
+  /* ─── SUBJECT BLOCK ─── */
+  .subject-block {
+    margin-bottom: 36px;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .subject-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .subject-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .subject-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  .subject-progress-chip {
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  /* ─── TOPIC (chapter) ─── */
+  .topic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .topic-card:hover { border-color: #2d3f5a; }
+
+  .topic-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .topic-checkbox-all {
+    width: 18px; height: 18px;
+    border-radius: 5px;
+    border: 2px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    accent-color: var(--done);
+    flex-shrink: 0;
+  }
+  .topic-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    flex: 1;
+    letter-spacing: 0.1px;
+  }
+  .topic-mini-progress {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-weight: 500;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+  .topic-toggle {
+    width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    font-size: 0.6rem;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+  .topic-card.open .topic-toggle { transform: rotate(180deg); }
+
+  /* inline mini progress bar inside topic header */
+  .topic-bar {
+    width: 60px; height: 3px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .topic-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--done);
+    transition: width 0.3s;
+  }
+
+  /* ─── SUBTOPICS ─── */
+  .subtopics {
+    display: none;
+    padding: 4px 16px 14px 44px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .topic-card.open .subtopics { display: block; }
+
+  .subtopic-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .subtopic-item:last-child { border-bottom: none; }
+
+  .subtopic-cb {
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    margin-top: 1px;
+    cursor: pointer;
+    accent-color: var(--done);
+    flex-shrink: 0;
+  }
+  .subtopic-label {
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: color 0.15s;
+    user-select: none;
+  }
+  .subtopic-item.checked .subtopic-label {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  /* ─── SUBJECT COLOURS ─── */
+  .Mathematics .subject-icon { background: rgba(245,158,11,0.15); }
+  .Mathematics .subject-title { color: var(--accent-math); }
+  .Mathematics .subject-progress-chip { color: var(--accent-math); border-color: rgba(245,158,11,0.3); }
+  .Mathematics .topic-bar-fill { background: var(--accent-math); }
+
+  .English .subject-icon { background: rgba(52,211,153,0.15); }
+  .English .subject-title { color: var(--accent-eng); }
+  .English .subject-progress-chip { color: var(--accent-eng); border-color: rgba(52,211,153,0.3); }
+  .English .topic-bar-fill { background: var(--accent-eng); }
+
+  .Reasoning .subject-icon { background: rgba(129,140,248,0.15); }
+  .Reasoning .subject-title { color: var(--accent-rea); }
+  .Reasoning .subject-progress-chip { color: var(--accent-rea); border-color: rgba(129,140,248,0.3); }
+  .Reasoning .topic-bar-fill { background: var(--accent-rea); }
+
+  .GeneralAwareness .subject-icon { background: rgba(244,114,182,0.15); }
+  .GeneralAwareness .subject-title { color: var(--accent-gk); }
+  .GeneralAwareness .subject-progress-chip { color: var(--accent-gk); border-color: rgba(244,114,182,0.3); }
+  .GeneralAwareness .topic-bar-fill { background: var(--accent-gk); }
+
+  /* ─── RESET BTN ─── */
+  .footer-actions {
+    text-align: center;
+    margin-top: 40px;
+  }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 9px 24px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: #ef4444; color: #ef4444; }
 </style>
 </head>
-
 <body>
 
-<h1>SSC CGL 2026 Tracker</h1>
+<header>
+  <h1>SSC CGL 2026 — Study Tracker</h1>
+  <p>Tier I · Full Syllabus Checklist · Track every topic &amp; subtopic</p>
+</header>
 
-<div class="topbar">
-  <button onclick="exportData()">⬇ Download Backup</button>
-  <input type="file" onchange="importData(event)">
+<div class="overall-bar-wrap">
+  <div class="overall-bar-top">
+    <span>Overall Progress</span>
+    <span id="overall-pct">0%</span>
+  </div>
+  <div class="bar-track"><div class="bar-fill" id="overall-bar" style="width:0%"></div></div>
 </div>
 
-<div id="app"></div>
+<div class="tabs">
+  <button class="tab-btn active" data-subject="all">All Subjects</button>
+  <button class="tab-btn" data-subject="Mathematics">📐 Mathematics</button>
+  <button class="tab-btn" data-subject="English">📖 English</button>
+  <button class="tab-btn" data-subject="Reasoning">🧩 Reasoning</button>
+  <button class="tab-btn" data-subject="General Awareness">🌍 General Awareness</button>
+</div>
+
+<div class="main" id="app"></div>
+
+<div class="footer-actions main">
+  <button class="reset-btn" onclick="resetAll()">⟳ Reset All Progress</button>
+</div>
 
 <script>
-const syllabus = {
-"Maths": ["Number System","Percentage","Profit Loss","Ratio","Time Work","Time Speed Distance","Algebra","Geometry","Mensuration","Trigonometry","DI","Statistics"],
-"English": ["Reading","Cloze","Error","Sentence Improvement","Vocab","Idioms","Voice","Speech"],
-"Reasoning": ["Analogy","Series","Coding","Blood Relation","Puzzle","Seating","Syllogism","Venn"],
-"GK": ["History","Geography","Polity","Economics","Science","Computer","Current Affairs"]
-};
+/* ════════════════════════════════════════════
+   SYLLABUS DATA  — subject > topic > subtopics
+   ════════════════════════════════════════════ */
+const SYLLABUS = [
 
-const app = document.getElementById("app");
+  /* ══ MATHEMATICS ══════════════════════════ */
+  {
+    subject: "Mathematics",
+    icon: "📐",
+    topics: [
+      {
+        name: "Number System",
+        subtopics: [
+          "Natural, Whole & Integer Numbers",
+          "Fractions & Decimals",
+          "Divisibility Rules (2,3,4,5,6,8,9,11)",
+          "HCF & LCM — Methods & Word Problems",
+          "Remainder Theorem — Basic & Advanced",
+          "Unit Digit Problems",
+          "Cyclicity of Powers",
+          "Number of Zeros (factorial / product)",
+        ]
+      },
+      {
+        name: "Percentage & Profit–Loss",
+        subtopics: [
+          "Percentage — Increase, Decrease & Change",
+          "Percentage — Application in Income/Expenditure",
+          "Profit & Loss — Basic Formulas",
+          "Successive Selling & Discount",
+          "Dishonest Shopkeeper / False Weight",
+          "Markup & Marked Price Problems",
+        ]
+      },
+      {
+        name: "Ratio, Proportion & Averages",
+        subtopics: [
+          "Ratio & Proportion — Types & Properties",
+          "Partnership (Simple & Compound)",
+          "Average — Mean, Weighted Average",
+          "Average — Age / Speed Problems",
+        ]
+      },
+      {
+        name: "Mixture & Alligation",
+        subtopics: [
+          "Alligation Rule & Cross Method",
+          "Mixing Two Mixtures",
+          "Replacement (Repeated Dilution)",
+        ]
+      },
+      {
+        name: "Simple & Compound Interest",
+        subtopics: [
+          "Simple Interest — Formula & Problems",
+          "Compound Interest — Annual / Half-yearly",
+          "CI vs SI Difference Tricks",
+          "Population Growth / Depreciation",
+        ]
+      },
+      {
+        name: "Time & Work / Pipes & Cistern",
+        subtopics: [
+          "Work Efficiency & Days Concept",
+          "Work Done by Multiple People",
+          "Wages in Work Problems",
+          "Pipes Filling & Emptying Together",
+        ]
+      },
+      {
+        name: "Speed, Distance & Time",
+        subtopics: [
+          "Basic Speed–Distance–Time Formula",
+          "Relative Speed (Same & Opposite Direction)",
+          "Trains — Crossing Poles, Platforms, Trains",
+          "Boats & Streams (Upstream / Downstream)",
+          "Circular Track Problems",
+        ]
+      },
+      {
+        name: "Algebra",
+        subtopics: [
+          "Standard Algebraic Identities (a²–b², a³–b³, etc.)",
+          "Factorisation of Polynomials",
+          "Linear Equations in One & Two Variables",
+          "Quadratic Equations — Roots & Nature",
+          "Surds — Simplification & Rationalisation",
+          "Indices (Laws of Exponents)",
+          "Finding Values of Expressions (a+1/a type)",
+        ]
+      },
+      {
+        name: "Geometry",
+        subtopics: [
+          "Lines, Angles & Parallel Lines",
+          "Triangles — Properties, Congruence, Similarity",
+          "Pythagoras Theorem & Special Triangles",
+          "Centres of Triangle (Centroid, Incentre, etc.)",
+          "Circles — Chords, Tangents, Secants",
+          "Angles in a Circle (Inscribed Angle Theorem)",
+          "Quadrilaterals & Properties (Parallelogram, Rhombus, Trapezium)",
+          "Regular Polygons — Interior & Exterior Angles",
+        ]
+      },
+      {
+        name: "Mensuration",
+        subtopics: [
+          "Triangle — Area (Heron's, Base×Height, SAS)",
+          "Quadrilaterals — Rectangle, Square, Rhombus, Trapezium",
+          "Circle — Area, Circumference, Sector, Segment",
+          "Cube & Cuboid — Volume, TSA, LSA",
+          "Cylinder — Volume & CSA",
+          "Cone — Volume, Slant Height, CSA",
+          "Sphere & Hemisphere",
+          "Prism & Pyramid — Volume & Surface Area",
+          "Combination of Solids",
+        ]
+      },
+      {
+        name: "Trigonometry",
+        subtopics: [
+          "Trigonometric Ratios (sin, cos, tan, cosec, sec, cot)",
+          "Standard Values (0°, 30°, 45°, 60°, 90°)",
+          "Trigonometric Identities (sin²+cos²=1, etc.)",
+          "Complementary Angles",
+          "Heights & Distances — Angle of Elevation",
+          "Heights & Distances — Angle of Depression",
+        ]
+      },
+      {
+        name: "Data Interpretation",
+        subtopics: [
+          "Data Table — Reading & Calculations",
+          "Bar Graph — Simple & Grouped",
+          "Pie Chart — Degree / Percentage Based",
+          "Line Graph — Trend Analysis",
+          "Mixed DI (2 graphs combined)",
+        ]
+      },
+      {
+        name: "Statistics",
+        subtopics: [
+          "Mean — Simple, Weighted, Combined",
+          "Median — Grouped & Ungrouped Data",
+          "Mode — Grouped & Ungrouped Data",
+        ]
+      },
+    ]
+  },
 
-function save() {
-  let data = {};
-  document.querySelectorAll("input").forEach(cb => data[cb.id] = cb.checked);
-  localStorage.setItem("ssc_tracker", JSON.stringify(data));
+  /* ══ ENGLISH ══════════════════════════════ */
+  {
+    subject: "English",
+    icon: "📖",
+    topics: [
+      {
+        name: "Reading Comprehension & Cloze Test",
+        subtopics: [
+          "Passage — Factual & Inferential Questions",
+          "Tone, Theme & Title of Passage",
+          "Vocabulary in Context",
+          "Cloze Test — Context Clue Strategy",
+        ]
+      },
+      {
+        name: "Grammar — Error & Improvement",
+        subtopics: [
+          "Parts of Speech (Noun, Pronoun, Adjective, Adverb, etc.)",
+          "Tenses — Simple, Continuous, Perfect, Perfect Continuous",
+          "Subject–Verb Agreement",
+          "Articles (A, An, The) — Rules",
+          "Prepositions — Common Usage",
+          "Conjunctions & Connectors",
+          "Error Spotting — Identify & Correct Underlined Parts",
+          "Sentence Improvement — Choose Better Option",
+        ]
+      },
+      {
+        name: "Grammar — Voice & Speech",
+        subtopics: [
+          "Active Voice → Passive Voice Conversion",
+          "Passive Voice → Active Voice Conversion",
+          "Direct Speech → Indirect Speech",
+          "Indirect Speech → Direct Speech",
+          "Reporting Verbs (say, tell, ask, order, etc.)",
+        ]
+      },
+      {
+        name: "Sentence Arrangement",
+        subtopics: [
+          "Para Jumbles — Logical Sequencing",
+          "Sentence Connector (find linking sentence)",
+          "Opening & Closing Sentence Identification",
+        ]
+      },
+      {
+        name: "Fill in the Blanks",
+        subtopics: [
+          "Single Blank — Grammar Based",
+          "Double Blank — Contextual Vocabulary",
+          "Preposition / Article / Conjunction Blanks",
+        ]
+      },
+      {
+        name: "Vocabulary",
+        subtopics: [
+          "Synonyms — SSC High-Frequency Word List",
+          "Antonyms — SSC High-Frequency Word List",
+          "One Word Substitution — 200+ Standard List",
+          "Idioms & Phrases — Meaning & Usage",
+          "Spelling Correction — Common Misspellings",
+        ]
+      },
+    ]
+  },
+
+  /* ══ REASONING ════════════════════════════ */
+  {
+    subject: "Reasoning",
+    icon: "🧩",
+    topics: [
+      {
+        name: "Analogy",
+        subtopics: [
+          "Word Analogy (Semantic Relationship)",
+          "Number Analogy",
+          "Letter / Alphabet Analogy",
+          "Mixed / Image-Based Analogy",
+        ]
+      },
+      {
+        name: "Classification (Odd One Out)",
+        subtopics: [
+          "Word Classification",
+          "Number Classification",
+          "Letter/Group Classification",
+          "GK-Based Classification",
+        ]
+      },
+      {
+        name: "Coding & Decoding",
+        subtopics: [
+          "Letter Coding (A=1, A=Z type)",
+          "Number Coding",
+          "Conditional / Substitution Coding",
+          "Mixed Letter-Number Coding",
+        ]
+      },
+      {
+        name: "Series",
+        subtopics: [
+          "Number Series — Missing Term",
+          "Number Series — Wrong Term",
+          "Alphabetical Series — Pattern Detection",
+          "Alphanumeric Series",
+        ]
+      },
+      {
+        name: "Blood Relations",
+        subtopics: [
+          "Direct Blood Relation Questions",
+          "Coded Blood Relations",
+          "Family Tree / Generation Problems",
+        ]
+      },
+      {
+        name: "Direction & Distance",
+        subtopics: [
+          "Cardinal Directions — Navigation Problems",
+          "Shadow-Based Direction Problems",
+          "Distance Calculation After Turns",
+        ]
+      },
+      {
+        name: "Venn Diagram & Syllogism",
+        subtopics: [
+          "Venn Diagram — Find Correct Diagram",
+          "Syllogism — All, Some, No Statements",
+          "Syllogism — Possibility Cases",
+          "Statement & Conclusion / Assumption",
+        ]
+      },
+      {
+        name: "Arrangement & Puzzles",
+        subtopics: [
+          "Linear Seating Arrangement (Row)",
+          "Circular Seating Arrangement",
+          "Scheduling / Tabular Puzzle",
+          "Floor / Building Arrangement",
+          "Order & Ranking (Position from Top/Bottom)",
+        ]
+      },
+      {
+        name: "Non-Verbal Reasoning",
+        subtopics: [
+          "Mirror & Water Image",
+          "Paper Folding & Cutting",
+          "Embedded Figure",
+          "Figure Completion",
+          "Counting of Figures (Triangles, Squares)",
+          "Dice & Cube Problems",
+        ]
+      },
+      {
+        name: "Miscellaneous Reasoning",
+        subtopics: [
+          "Mathematical Operations (Symbol Substitution)",
+          "Missing Number in Matrix / Figure",
+          "Calendar Problems",
+          "Clock Problems",
+        ]
+      },
+    ]
+  },
+
+  /* ══ GENERAL AWARENESS ════════════════════ */
+  {
+    subject: "General Awareness",
+    icon: "🌍",
+    topics: [
+      {
+        name: "Ancient & Medieval Indian History",
+        subtopics: [
+          "Indus Valley Civilisation",
+          "Vedic Age & Later Vedic Period",
+          "Buddhism & Jainism",
+          "Mauryan Empire (Chandragupta, Ashoka)",
+          "Gupta Empire — Golden Age",
+          "Sangam Age & South Indian Dynasties",
+          "Delhi Sultanate (1206–1526)",
+          "Mughal Empire (Babur to Aurangzeb)",
+          "Bhakti & Sufi Movements",
+        ]
+      },
+      {
+        name: "Modern Indian History",
+        subtopics: [
+          "British East India Company & Expansion",
+          "Governor-Generals & Viceroys — Key Policies",
+          "Revolt of 1857 — Causes, Events, Impact",
+          "Early Nationalist Movements (INC Formation)",
+          "Partition of Bengal & Swadeshi Movement",
+          "Gandhi Era — Non-Cooperation, Civil Disobedience, Quit India",
+          "Revolutionary Movements (Bhagat Singh, etc.)",
+          "Communal Award & Poona Pact",
+          "Independence & Partition — 1947",
+        ]
+      },
+      {
+        name: "Indian Geography",
+        subtopics: [
+          "Physiographic Divisions of India",
+          "Himalayas — Ranges, Passes & Rivers",
+          "Northern Plains & Peninsular Plateau",
+          "Indian Rivers — Origin, Tributaries & Basins",
+          "Soils of India — Types & Distribution",
+          "Forests & Vegetation Zones",
+          "Climate — Monsoon, Seasons & Cyclones",
+          "Agriculture — Major Crops & Regions",
+          "Minerals & Industries",
+          "Census Data — Population, Sex Ratio, Literacy",
+        ]
+      },
+      {
+        name: "World Geography",
+        subtopics: [
+          "Continents & Oceans — Key Facts",
+          "Major Mountain Ranges of the World",
+          "World Rivers — Longest, Largest by Discharge",
+          "Deserts, Grasslands & Forests",
+          "Latitude, Longitude & Time Zones",
+          "Tectonic Plates — Earthquakes & Volcanoes",
+          "Important Straits, Gulfs & Bays",
+          "Countries — Capitals, Currencies, Borders",
+        ]
+      },
+      {
+        name: "Indian Polity & Constitution",
+        subtopics: [
+          "Making of the Constitution — Constituent Assembly",
+          "Preamble — Key Words & Significance",
+          "Fundamental Rights (Articles 12–35)",
+          "Directive Principles (Articles 36–51)",
+          "Fundamental Duties (Article 51A)",
+          "President — Powers, Election, Impeachment",
+          "Prime Minister & Council of Ministers",
+          "Parliament — Lok Sabha & Rajya Sabha",
+          "Judiciary — Supreme Court & High Courts",
+          "Governor & State Legislature",
+          "Constitutional Amendments — Important Ones",
+          "Emergency Provisions (Art. 352, 356, 360)",
+          "Panchayati Raj (73rd & 74th Amendment)",
+          "Constitutional Bodies (EC, CAG, UPSC, etc.)",
+        ]
+      },
+      {
+        name: "Indian Economy",
+        subtopics: [
+          "Types of Economies — Capitalist, Socialist, Mixed",
+          "National Income — GDP, GNP, NNP, NDP",
+          "Planning Commission → NITI Aayog",
+          "Five Year Plans — Key Highlights",
+          "Sectors of Economy — Primary, Secondary, Tertiary",
+          "Money, Banking & RBI Functions",
+          "Union Budget — Revenue & Capital Account",
+          "Fiscal Policy & Monetary Policy",
+          "Inflation — Types, CPI, WPI, Repo Rate",
+          "Tax Structure — Direct & Indirect Taxes, GST",
+          "Poverty & Unemployment — Concepts & Measures",
+        ]
+      },
+      {
+        name: "Physics",
+        subtopics: [
+          "Units & Measurements — SI System",
+          "Motion — Laws of Newton, Circular Motion",
+          "Work, Energy & Power",
+          "Gravitation — Kepler's Laws, Escape Velocity",
+          "Heat & Temperature — Thermodynamics Basics",
+          "Sound — Waves, Doppler Effect, Echo",
+          "Light — Reflection, Refraction, Mirrors & Lenses",
+          "Electricity — Ohm's Law, Circuits, Power",
+          "Magnetism & Electromagnetic Induction",
+          "Modern Physics — Radioactivity, X-rays, Lasers",
+          "Scientific Instruments & Their Uses",
+        ]
+      },
+      {
+        name: "Chemistry",
+        subtopics: [
+          "Matter — States & Properties",
+          "Atomic Structure — Bohr Model, Shells",
+          "Periodic Table — Trends & Important Elements",
+          "Chemical Bonding — Ionic, Covalent",
+          "Acids, Bases & Salts — pH, Indicators",
+          "Metals & Non-Metals — Properties & Reactions",
+          "Carbon & Its Compounds",
+          "Chemical Reactions — Types & Examples",
+          "Important Compounds — Formula & Uses",
+          "Fuels & Combustion",
+          "Pollution — Air, Water, Soil — Chemicals Involved",
+        ]
+      },
+      {
+        name: "Biology",
+        subtopics: [
+          "Cell — Structure, Organelles, Cell Division",
+          "Plant Kingdom — Classification, Photosynthesis",
+          "Animal Kingdom — Phyla & Key Characteristics",
+          "Human Digestive System",
+          "Human Circulatory System — Heart & Blood",
+          "Human Respiratory System",
+          "Human Nervous System & Brain",
+          "Human Endocrine System — Hormones & Glands",
+          "Reproductive System — Male & Female",
+          "Genetics — DNA, RNA, Mendel's Laws",
+          "Diseases — Causative Agents, Symptoms, Vaccines",
+          "Nutrition — Vitamins, Minerals, Deficiency Diseases",
+          "Ecology & Ecosystem",
+        ]
+      },
+      {
+        name: "Computer Knowledge",
+        subtopics: [
+          "History of Computers & Generations",
+          "Hardware Components (CPU, RAM, ROM, Storage)",
+          "Software — System & Application Software",
+          "Operating Systems — Windows, Linux, macOS",
+          "MS Office — Word, Excel, PowerPoint Shortcuts",
+          "Internet — Protocols (HTTP, FTP, TCP/IP)",
+          "Networking Concepts (LAN, WAN, MAN, Bandwidth)",
+          "Database & SQL Basics",
+          "Cyber Security — Viruses, Malware, Phishing",
+          "Number Systems — Binary, Octal, Hexadecimal",
+        ]
+      },
+      {
+        name: "Current Affairs (Last 6–8 Months)",
+        subtopics: [
+          "National News — Government Policy & Bills",
+          "International News — Summits & Agreements",
+          "Defence & Space Programmes",
+          "Sports — National & International Results",
+          "Awards — Bharat Ratna, Padma, Nobel, Oscars",
+          "Books & Authors — Recently Published",
+          "Important Days & Themes",
+          "New Appointments — Heads of Organisations",
+          "Obituaries — Notable Personalities",
+          "Government Schemes & Social Programmes",
+        ]
+      },
+    ]
+  }
+];
+
+/* ════════════════════════════════════════════
+   STORAGE
+   ════════════════════════════════════════════ */
+function saveData() {
+  const data = {};
+  document.querySelectorAll(".subtopic-cb").forEach(cb => { data[cb.id] = cb.checked; });
+  localStorage.setItem("ssc_cgl_2026", JSON.stringify(data));
+}
+function loadData() {
+  return JSON.parse(localStorage.getItem("ssc_cgl_2026")) || {};
+}
+function resetAll() {
+  if (!confirm("Reset all progress? This cannot be undone.")) return;
+  localStorage.removeItem("ssc_cgl_2026");
+  location.reload();
 }
 
-function load() {
-  let data = JSON.parse(localStorage.getItem("ssc_tracker")) || {};
-  document.querySelectorAll("input").forEach(cb => cb.checked = data[cb.id] || false);
+/* ════════════════════════════════════════════
+   COUNTERS
+   ════════════════════════════════════════════ */
+function getTopicCounts(topicCard) {
+  const boxes = topicCard.querySelectorAll(".subtopic-cb");
+  const done = [...boxes].filter(cb => cb.checked).length;
+  return { done, total: boxes.length };
 }
-
-function exportData() {
-  const data = localStorage.getItem("ssc_tracker");
-  const blob = new Blob([data], {type:"application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "ssc-backup.json";
-  a.click();
+function updateTopicUI(topicCard) {
+  const { done, total } = getTopicCounts(topicCard);
+  const pct = total ? (done / total) * 100 : 0;
+  topicCard.querySelector(".topic-mini-progress").textContent = `${done}/${total}`;
+  topicCard.querySelector(".topic-bar-fill").style.width = pct + "%";
 }
-
-function importData(e) {
-  const file = e.target.files[0];
-  const reader = new FileReader();
-  reader.onload = function() {
-    localStorage.setItem("ssc_tracker", reader.result);
-    location.reload();
-  };
-  reader.readAsText(file);
+function updateSubjectUI(subjectBlock) {
+  const boxes = subjectBlock.querySelectorAll(".subtopic-cb");
+  const done = [...boxes].filter(cb => cb.checked).length;
+  const total = boxes.length;
+  subjectBlock.querySelector(".subject-progress-chip").textContent = `${done} / ${total} done`;
 }
-
-function update(div) {
-  let boxes = div.querySelectorAll("input");
-  let done = [...boxes].filter(x=>x.checked).length;
-  div.querySelector(".progress").innerText = `Progress: ${done}/${boxes.length}`;
+function updateOverall() {
+  const all = document.querySelectorAll(".subtopic-cb");
+  const done = [...all].filter(cb => cb.checked).length;
+  const total = all.length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById("overall-pct").textContent = pct + "%";
+  document.getElementById("overall-bar").style.width = pct + "%";
 }
+function updateAll() { updateOverall(); }
 
-Object.keys(syllabus).forEach(sec=>{
-  let div=document.createElement("div");
-  div.className="section";
+/* ════════════════════════════════════════════
+   BUILD UI
+   ════════════════════════════════════════════ */
+function buildUI() {
+  const app = document.getElementById("app");
+  const saved = loadData();
 
-  let h=document.createElement("h2");
-  h.innerText=sec;
-  div.appendChild(h);
+  SYLLABUS.forEach(subjectData => {
+    const safeClass = subjectData.subject.replace(/\s+/g, "");
+    const subjectBlock = document.createElement("div");
+    subjectBlock.className = `subject-block ${safeClass}`;
+    subjectBlock.dataset.subject = subjectData.subject;
 
-  syllabus[sec].forEach(topic=>{
-    let id=sec+"-"+topic;
+    // Subject header
+    subjectBlock.innerHTML = `
+      <div class="subject-header">
+        <div class="subject-icon">${subjectData.icon}</div>
+        <div class="subject-title">${subjectData.subject}</div>
+        <div class="subject-progress-chip">0 / 0 done</div>
+      </div>
+    `;
 
-    let label=document.createElement("label");
-    let cb=document.createElement("input");
+    // Topics
+    subjectData.topics.forEach((topic, tIdx) => {
+      const topicCard = document.createElement("div");
+      topicCard.className = "topic-card";
 
-    cb.type="checkbox";
-    cb.id=id;
+      const topicHeader = document.createElement("div");
+      topicHeader.className = "topic-header";
+      topicHeader.innerHTML = `
+        <span class="topic-name">${topic.name}</span>
+        <span class="topic-mini-progress">0/${topic.subtopics.length}</span>
+        <div class="topic-bar"><div class="topic-bar-fill" style="width:0%"></div></div>
+        <div class="topic-toggle">▼</div>
+      `;
 
-    cb.onchange=()=>{save(); update(div);};
+      // Toggle open/close
+      topicHeader.addEventListener("click", () => {
+        topicCard.classList.toggle("open");
+      });
 
-    label.appendChild(cb);
-    label.append(topic);
+      // Subtopics
+      const subtopicsDiv = document.createElement("div");
+      subtopicsDiv.className = "subtopics";
 
-    div.appendChild(label);
+      topic.subtopics.forEach((sub, sIdx) => {
+        const id = `${safeClass}_t${tIdx}_s${sIdx}`;
+        const item = document.createElement("div");
+        item.className = "subtopic-item";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.className = "subtopic-cb";
+        cb.id = id;
+        cb.checked = saved[id] || false;
+        if (cb.checked) item.classList.add("checked");
+
+        const lbl = document.createElement("label");
+        lbl.className = "subtopic-label";
+        lbl.htmlFor = id;
+        lbl.textContent = sub;
+
+        cb.addEventListener("change", () => {
+          item.classList.toggle("checked", cb.checked);
+          updateTopicUI(topicCard);
+          updateSubjectUI(subjectBlock);
+          updateOverall();
+          saveData();
+        });
+
+        item.appendChild(cb);
+        item.appendChild(lbl);
+        subtopicsDiv.appendChild(item);
+      });
+
+      topicCard.appendChild(topicHeader);
+      topicCard.appendChild(subtopicsDiv);
+      subjectBlock.appendChild(topicCard);
+      updateTopicUI(topicCard);
+    });
+
+    app.appendChild(subjectBlock);
+    updateSubjectUI(subjectBlock);
   });
 
-  let prog=document.createElement("div");
-  prog.className="progress";
-  div.appendChild(prog);
+  updateOverall();
+}
 
-  app.appendChild(div);
+/* ════════════════════════════════════════════
+   TABS
+   ════════════════════════════════════════════ */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const filter = btn.dataset.subject;
+    document.querySelectorAll(".subject-block").forEach(block => {
+      block.style.display = (filter === "all" || block.dataset.subject === filter) ? "" : "none";
+    });
+  });
 });
 
-load();
-document.querySelectorAll(".section").forEach(update);
+buildUI();
 </script>
-
 </body>
 </html>
